@@ -10,7 +10,7 @@ use crate::Error;
 use k256::ecdsa::signature::hazmat::PrehashVerifier;
 use k256::ecdsa::VerifyingKey;
 use tw_encoding::hex;
-use tw_hash::{H256, H264, H520};
+use tw_hash::{H256, H264, H512, H520};
 use tw_utils::traits::ToBytesVec;
 
 /// Represents a `secp256k1` public key.
@@ -42,6 +42,16 @@ impl PublicKey {
         let compressed = false;
         H520::try_from(self.public.to_encoded_point(compressed).as_bytes())
             .expect("Expected 65 byte array Public Key")
+    }
+
+    /// Returns the raw data of the uncompressed public key without the tag prefix (64 bytes).
+    pub fn uncompressed_without_prefix(&self) -> H512 {
+        let compressed = false;
+
+        let prefixed_bytes = self.public.to_encoded_point(compressed);
+        assert_eq!(prefixed_bytes.len(), H520::len());
+        let bytes_without_prefix = &prefixed_bytes.as_bytes()[1..];
+        H512::try_from(bytes_without_prefix).expect("Expected 64 byte array")
     }
 }
 
