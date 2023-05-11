@@ -5,28 +5,41 @@
 // file LICENSE at the root of the source code distribution tree.
 
 use crate::secp256k1::signature::VerifySignature;
+use crate::secp256k1::EcdsaCurve;
 use crate::traits::VerifyingKeyTrait;
 use crate::KeyPairError;
-use k256::ecdsa::signature::hazmat::PrehashVerifier;
-use k256::ecdsa::VerifyingKey;
+use ecdsa::elliptic_curve::AffinePoint;
+use ecdsa::hazmat::VerifyPrimitive;
+use ecdsa::signature::hazmat::PrehashVerifier;
+use ecdsa::VerifyingKey;
+use k256::elliptic_curve::sec1::FromEncodedPoint;
+use p256::elliptic_curve::sec1::ToEncodedPoint;
 use tw_encoding::hex;
 use tw_hash::{H256, H264, H520};
 use tw_misc::traits::ToBytesVec;
 
 /// Represents a `secp256k1` public key.
-pub struct PublicKey {
-    pub(crate) public: VerifyingKey,
+pub struct PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
+    pub(crate) public: VerifyingKey<C>,
 }
 
 /// cbindgen:ignore
-impl PublicKey {
+impl<C> PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     /// The number of bytes in a compressed public key.
     pub const COMPRESSED: usize = H264::len();
     /// The number of bytes in an uncompressed public key.
     pub const UNCOMPRESSED: usize = H520::len();
 
     /// Creates a public key from the given [`VerifyingKey`].
-    pub(crate) fn new(public: VerifyingKey) -> PublicKey {
+    pub(crate) fn new(public: VerifyingKey<C>) -> PublicKey<C> {
         PublicKey { public }
     }
 
@@ -45,9 +58,13 @@ impl PublicKey {
     }
 }
 
-impl VerifyingKeyTrait for PublicKey {
+impl<C> VerifyingKeyTrait for PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     type SigningMessage = H256;
-    type VerifySignature = VerifySignature;
+    type VerifySignature = VerifySignature<C>;
 
     fn verify(&self, sign: Self::VerifySignature, message: Self::SigningMessage) -> bool {
         self.public
@@ -56,7 +73,11 @@ impl VerifyingKeyTrait for PublicKey {
     }
 }
 
-impl<'a> TryFrom<&'a str> for PublicKey {
+impl<'a, C> TryFrom<&'a str> for PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
@@ -65,7 +86,11 @@ impl<'a> TryFrom<&'a str> for PublicKey {
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for PublicKey {
+impl<'a, C> TryFrom<&'a [u8]> for PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     type Error = KeyPairError;
 
     /// Expected either `H264` or `H520` slice.
@@ -79,7 +104,11 @@ impl<'a> TryFrom<&'a [u8]> for PublicKey {
 
 /// Return the compressed bytes representation by default.
 /// Consider using [`PublicKey::compressed`] or [`PublicKey::uncompressed`] instead.
-impl ToBytesVec for PublicKey {
+impl<C> ToBytesVec for PublicKey<C>
+where
+    C: EcdsaCurve,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     fn to_vec(&self) -> Vec<u8> {
         self.compressed().to_vec()
     }

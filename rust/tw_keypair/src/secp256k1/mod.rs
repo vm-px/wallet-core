@@ -4,16 +4,71 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+use ecdsa::elliptic_curve::bigint::U256;
+use ecdsa::elliptic_curve::consts::U32;
+use ecdsa::elliptic_curve::CurveArithmetic;
+use ecdsa::hazmat::DigestPrimitive;
+use ecdsa::PrimeCurve;
+
 // mod canonical;
 mod keypair;
 mod private;
 mod public;
 mod signature;
 
-pub use keypair::KeyPair;
-pub use private::PrivateKey;
-pub use public::PublicKey;
-pub use signature::{Signature, VerifySignature};
+// pub use keypair::KeyPair;
+// pub use private::PrivateKey;
+// pub use public::PublicKey;
+// pub use signature::{Signature, VerifySignature};
+
+pub type KeyPair = keypair::KeyPair<k256::Secp256k1>;
+pub type PrivateKey = private::PrivateKey<k256::Secp256k1>;
+pub type PublicKey = public::PublicKey<k256::Secp256k1>;
+pub type Signature = signature::Signature<k256::Secp256k1>;
+pub type VerifySignature = signature::VerifySignature<k256::Secp256k1>;
+
+pub trait EcdsaCurve:
+    PrimeCurve<FieldBytesSize = U32, Uint = U256> + CurveArithmetic + DigestPrimitive
+{
+}
+
+impl<T> EcdsaCurve for T where
+    T: PrimeCurve<FieldBytesSize = U32, Uint = U256> + CurveArithmetic + DigestPrimitive
+{
+}
+
+// fn foo() {
+//     // Scalar
+// }
+//
+// struct Foo<C: EcdsaCurve>
+//     where
+//         Scalar<C>: SignPrimitive<C>,
+// {
+//     key: SigningKey<C>,
+// }
+//
+// impl<C: EcdsaCurve> Foo<C>
+//     where
+//         Scalar<C>: SignPrimitive<C>,
+// {
+//     fn sign(&self, msg: &[u8]) {
+//         self.key.sign_prehash_recoverable(msg).unwrap();
+//     }
+// }
+
+// struct Bar<C: EcdsaCurve> {
+//     key: VerifyingKey<C>,
+// }
+//
+// impl<C: EcdsaCurve> Bar<C>
+// where
+//     AffinePoint<C>: VerifyPrimitive<C>,
+// {
+//     fn verify(&self, msg: &[u8], sign: &ecdsa::Signature<C>) {
+//         self.key.verify_prehash(msg, sign).unwrap();
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

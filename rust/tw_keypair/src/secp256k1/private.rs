@@ -6,30 +6,49 @@
 
 use crate::secp256k1::public::PublicKey;
 use crate::secp256k1::signature::Signature;
+use crate::secp256k1::EcdsaCurve;
 use crate::traits::SigningKeyTrait;
 use crate::{KeyPairError, KeyPairResult};
-use k256::ecdsa::{SigningKey, VerifyingKey};
-use k256::elliptic_curve::sec1::ToEncodedPoint;
-use k256::{AffinePoint, ProjectivePoint};
+use ecdsa::elliptic_curve::group::Curve;
+use ecdsa::elliptic_curve::sec1::{FromEncodedPoint, ToEncodedPoint};
+use ecdsa::elliptic_curve::{AffinePoint, ProjectivePoint, Scalar};
+use ecdsa::hazmat::{SignPrimitive, VerifyPrimitive};
+use ecdsa::{SigningKey, VerifyingKey};
+use k256::Secp256k1;
 use tw_encoding::hex;
 use tw_hash::H256;
 use tw_misc::traits::ToBytesZeroizing;
 use zeroize::Zeroizing;
 
 /// Represents a `secp256k1` private key.
-pub struct PrivateKey {
-    pub(crate) secret: SigningKey,
+pub struct PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+{
+    pub(crate) secret: SigningKey<C>,
 }
 
-impl PrivateKey {
+impl<C> PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
     /// Returns an associated `secp256k1` public key.
-    pub fn public(&self) -> PublicKey {
+    pub fn public(&self) -> PublicKey<C> {
         PublicKey::new(*self.secret.verifying_key())
     }
+}
 
+impl PrivateKey<Secp256k1> {
     /// Computes an EC Diffie-Hellman secret in constant time.
     /// The method is ported from [TW::PrivateKey::getSharedKey](https://github.com/trustwallet/wallet-core/blob/830b1c5baaf90692196163999e4ee2063c5f4e49/src/PrivateKey.cpp#L175-L191).
-    pub fn shared_key_hash(&self, pubkey: &PublicKey) -> H256 {
+    ///
+    /// # Note
+    ///
+    /// At this moment, `shared_key_hash` is only implemented for the `secp256k1` curve only.
+    pub fn shared_key_hash(&self, pubkey: &PublicKey<Secp256k1>) -> H256 {
         let shared_secret = diffie_hellman(&self.secret, &pubkey.public);
 
         // Get a compressed shared secret (33 bytes with a tag in front).
@@ -42,16 +61,27 @@ impl PrivateKey {
 }
 
 /// This method is inspired by [elliptic_curve::ecdh::diffie_hellman](https://github.com/RustCrypto/traits/blob/f0dbe44fea56d4c17e625ababacb580fec842137/elliptic-curve/src/ecdh.rs#L60-L70)
-fn diffie_hellman(private: &SigningKey, public: &VerifyingKey) -> AffinePoint {
-    let public_point = ProjectivePoint::from(*public.as_affine());
+fn diffie_hellman<C: EcdsaCurve>(
+    private: &SigningKey<C>,
+    public: &VerifyingKey<C>,
+) -> AffinePoint<C>
+where
+    Scalar<C>: SignPrimitive<C>,
+    AffinePoint<C>: VerifyPrimitive<C> + FromEncodedPoint<C> + ToEncodedPoint<C>,
+{
+    let public_point = ProjectivePoint::<C>::from(*public.as_affine());
     let secret_scalar = private.as_nonzero_scalar().as_ref();
     // Multiply the secret and public to get a shared secret affine point (x, y).
     (public_point * secret_scalar).to_affine()
 }
 
-impl SigningKeyTrait for PrivateKey {
+impl<C> SigningKeyTrait for PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+{
     type SigningMessage = H256;
-    type Signature = Signature;
+    type Signature = Signature<C>;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
         let (signature, recovery_id) = self
@@ -62,7 +92,11 @@ impl SigningKeyTrait for PrivateKey {
     }
 }
 
-impl<'a> TryFrom<&'a [u8]> for PrivateKey {
+impl<'a, C> TryFrom<&'a [u8]> for PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+{
     type Error = KeyPairError;
 
     fn try_from(data: &'a [u8]) -> Result<Self, Self::Error> {
@@ -71,7 +105,11 @@ impl<'a> TryFrom<&'a [u8]> for PrivateKey {
     }
 }
 
-impl<'a> TryFrom<&'a str> for PrivateKey {
+impl<'a, C> TryFrom<&'a str> for PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+{
     type Error = KeyPairError;
 
     fn try_from(hex: &'a str) -> Result<Self, Self::Error> {
@@ -80,7 +118,11 @@ impl<'a> TryFrom<&'a str> for PrivateKey {
     }
 }
 
-impl ToBytesZeroizing for PrivateKey {
+impl<C> ToBytesZeroizing for PrivateKey<C>
+where
+    C: EcdsaCurve,
+    Scalar<C>: SignPrimitive<C>,
+{
     fn to_zeroizing_vec(&self) -> Zeroizing<Vec<u8>> {
         let secret = Zeroizing::new(self.secret.to_bytes());
         Zeroizing::new(secret.as_slice().to_vec())
