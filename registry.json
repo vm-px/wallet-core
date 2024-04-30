@@ -129,6 +129,45 @@
     }
   },
   {
+    "id": "litecointestnet",
+    "name": "Litecoin Testnet",
+    "coinId": 4,
+    "symbol": "LTC",
+    "decimals": 8,
+    "blockchain": "Bitcoin",
+    "derivation": [
+      {
+        "path": "m/84'/2'/0'/0/0",
+        "xpub": "zpub",
+        "xprv": "zprv"
+      },
+      {
+        "name": "legacy",
+        "path": "m/44'/2'/0'/0/0",
+        "xpub": "xpub",
+        "xprv": "xprv"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "p2pkhPrefix": 111,
+    "p2shPrefix": 58,
+    "hrp": "tltc",
+    "publicKeyHasher": "sha256ripemd",
+    "base58Hasher": "sha256d",
+    "explorer": {
+      "url": "https://blockexplorer.one/",
+      "txPath": "/litecoin/testnet/tx/",
+      "accountPath": "/litecoin/testnet/address/"
+    },
+    "info": {
+      "url": "https://litecoin.org",
+      "source": "https://github.com/trezor/blockbook",
+      "rpc": "",
+      "documentation": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+    }
+  },
+  {
     "id": "doge",
     "name": "Dogecoin",
     "coinId": 3,

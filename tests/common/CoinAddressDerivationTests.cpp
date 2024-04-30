@@ -225,6 +225,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypeLitecoin:
             EXPECT_EQ(address, "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu");
             break;
+        case TWCoinTypeLitecoinTestnet:
+            EXPECT_EQ(address, "tltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu");
+            break;
         case TWCoinTypeMonacoin:
             EXPECT_EQ(address, "MRBWtGEKHGCHhmyJ1L4CwaWQZJzM5DnVcs");
             break;

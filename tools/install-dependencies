@@ -30,7 +30,7 @@ function build_gtest() {
     GTEST_DIR="$ROOT/build/local/src/gtest"
     cd ${GTEST_DIR}/googletest-release-$GTEST_VERSION
     $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
-    $MAKE -j4
+    $MAKE -j8
     $MAKE install
     $MAKE clean
 }
@@ -40,7 +40,7 @@ function build_libcheck() {
     CHECK_DIR="$ROOT/build/local/src/check"
     cd ${CHECK_DIR}/check-$CHECK_VERSION
     $CMAKE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
-    $MAKE -j4
+    $MAKE -j8
     $MAKE install
     $MAKE clean
 }
@@ -51,7 +51,7 @@ function build_protobuf() {
     cd ${PROTOBUF_DIR}/protobuf-$PROTOBUF_VERSION
 
     ./configure --prefix="$PREFIX"
-    $MAKE -j4
+    $MAKE -j8
     $MAKE install
 
     # after install, cleanup to save space (docker)
