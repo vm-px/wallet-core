@@ -2073,6 +2073,36 @@
     }
   },
   {
+    "id": "polkadotwestend",
+    "name": "Polkadot Westend",
+    "coinId": 355,
+    "symbol": "DOT",
+    "decimals": 12,
+    "blockchain": "Polkadot",
+    "derivation": [
+      {
+        "path": "m/44'/354'/0'/0'/0'"
+      }
+    ],
+    "curve": "ed25519",
+    "publicKeyType": "ed25519",
+    "addressHasher": "keccak256",
+    "ss58Prefix": 42,
+    "explorer": {
+      "url": "https://westend.subscan.io",
+      "txPath": "/extrinsic/",
+      "accountPath": "/account/",
+      "sampleTx": "0xb96f97d8ee508f420e606e1a6dcc74b88844713ddec2bd7cf4e3aa6b1d6beef4",
+      "sampleAccount": "5Em17WXgydLJFFFtw1DnkaXac1moV7fzUeJpgftWGbRbNFMY"
+    },
+    "info": {
+      "url": "https://polkadot.network/",
+      "source": "https://github.com/paritytech/polkadot",
+      "rpc": "",
+      "documentation": "https://polkadot.js.org/api/substrate/rpc.html"
+    }
+  },
+  {
     "id": "everscale",
     "name": "Everscale",
     "coinId": 396,
