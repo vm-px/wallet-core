@@ -49,6 +49,7 @@ This list is generated from [./registry.json](../registry.json)
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra Classic    | LUNC   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
 | 354     | Polkadot         | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadot/info/logo.png" width="32" />     | <https://polkadot.network/>   |
+| 355     | Polkadot Westend | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadotwestend/info/logo.png" width="32" /> | <https://polkadot.network/>   |
 | 361     | Theta Fuel       | TFUEL  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tfuelevm/info/logo.png" width="32" />     | <https://www.thetatoken.org>  |
 | 394     | Crypto.org       | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cryptoorg/info/logo.png" width="32" />    | <https://crypto.org/>         |
 | 396     | Everscale        | EVER   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/everscale/info/logo.png" width="32" />    | <https://everscale.network/>  |
