@@ -261,6 +261,9 @@ TEST(Coin, DeriveAddress) {
         case TWCoinTypePolkadot:
             EXPECT_EQ(address, "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
             break;
+        case TWCoinTypePolkadotWestend:
+            EXPECT_EQ(address, "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
+            break;
         case TWCoinTypeQtum:
             EXPECT_EQ(address, "QdtLm8ccxhuJFF5zCgikpaghbM3thdaGsW");
             break;
