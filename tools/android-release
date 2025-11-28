@@ -16,7 +16,7 @@ echo "Building $version"
 
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 pushd android
-./gradlew clean build assembleRelease publish -Pversion="$version"
+./gradlew clean build assembleRelease -Pversion="$version"
 
 echo "Android build uploaded"
 popd # android
